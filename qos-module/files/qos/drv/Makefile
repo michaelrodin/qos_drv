@@ -5,7 +5,7 @@ ccflags-y += -I$(KERNELSRC)/include
 QOS_MODULE =
 
 all:
-	make -C $(KERNELSRC) M=$(shell pwd) modules
+	make -C $(KERNELSRC) M=$(shell pwd) ccflags-y="-DDEBUG" modules
 
 clean:
 	make -C $(KERNELSRC) M=$(shell pwd) clean

@@ -69,5 +69,6 @@ int rcar_qos_set_all_qos(struct qos_ioc_set_all_qos_param *param);
 int rcar_qos_switch_membank(void);
 void rcar_qos_suspend(void);
 void rcar_qos_resume(void);
+void qos_sram_dump(void);
 
 #endif /* __QOS_CORE_H__ */

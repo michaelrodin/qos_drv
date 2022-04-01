@@ -483,6 +483,49 @@ void rcar_qos_suspend(void)
 	qos_sram_backup(qos_fix_offset, qos_be_offset);
 }
 
+void qos_sram_dump(void)
+{
+	int i;
+	__u32 qos_fix_offset;
+	__u32 qos_be_offset;
+	__u32 memory_bank;
+	__u32 value_index;
+	__u32 exe_membank;
+	__u64 qos_dump_fix;
+	__u64 qos_dump_be;
+
+	mutex_lock(&qos_mutex);
+
+	memory_bank = READ_REG32(va_qos_memory_bank);
+	// QOS_DBG("Read Reg[QOS_REG_TYPE_MEMORY_BANK][%p], value[0x%08x]",
+	// 				va_qos_memory_bank, memory_bank);
+
+	if (!support_exe_membank)
+		exe_membank = exe_membank_bk;
+	else
+		exe_membank = (memory_bank & EXE_MEMBANK_MASK) >> 8;
+
+	qos_fix_offset = exe_membank ? 0x1000 : 0x0;
+	qos_be_offset = exe_membank ? 0x3000 : 0x2000;
+
+	for (i = 0; i < master_id_max + 1; i++) {
+		qos_dump_fix = 0;
+		qos_dump_be = 0;
+		value_index = i*8;
+		qos_reg_store(&qos_dump_fix, qos_fix_offset + value_index, 0);
+		qos_reg_store(&qos_dump_be, qos_be_offset + value_index, 0);
+		QOS_DBG("%i,%i,0x%08X,0x%016llX,0x%08X,0x%016llX",
+			   i,
+			   i,
+			   QOS_BASE0 + qos_fix_offset + value_index,
+			   qos_dump_fix,
+			   QOS_BASE0 + qos_be_offset + value_index,
+			   qos_dump_be);
+	}
+
+	mutex_unlock(&qos_mutex);
+}
+
 static void qos_sram_reload(__u32 qos_fix_offset, __u32 qos_be_offset)
 {
 	int i;

@@ -228,6 +228,8 @@ static int __init qos_init(void)
 
 	pr_info("QoS Driver is Successfully loaded\n");
 
+	qos_sram_dump();
+
 	QOS_DBG("end");
 
 	return ret;
